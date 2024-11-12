@@ -75,6 +75,8 @@ export interface OSCALDocumentLoaderProps {
   backendUrl: string;
   urlFragment: string;
   isRestMode: boolean;
+  oscalObjectUuid?: string;
+  ignoreRouter?: boolean;
 }
 
 export interface OSCALLoaderProps extends AnchorLinkProps {
@@ -82,6 +84,8 @@ export interface OSCALLoaderProps extends AnchorLinkProps {
   hasDefaultUrl?: boolean;
   backendUrl?: string;
   oscalObjectType: any;
+  oscalObjectUuid?: string;
+  ignoreRouter?: boolean;
   renderForm?: boolean;
   renderer: Renderer;
 }
@@ -118,7 +122,12 @@ export default function OSCALLoader(props: OSCALLoaderProps): ReactElement {
   // This will force a redraw of the form on each click, allowing us to reset after
   // an error and to ensure.
   const [reloadCount, setReloadCount] = useState(0);
-  const oscalObjectUuid = useParams()?.id ?? "";
+  // const oscalObjectUuid = useParams()?.id ?? "";
+  const [oscalObjectUuid, setOscalObjectUuid] = useState(props.oscalObjectUuid ?? "");
+  if (!oscalObjectUuid && useParams().id) {
+    setOscalObjectUuid(useParams().id)
+  }
+
   const buildOscalUrl = (uuid: string) =>
     `${props.backendUrl}/${props.oscalObjectType.restPath}/${uuid}`;
   const determineDefaultOscalUrl = () =>
@@ -283,8 +292,10 @@ export default function OSCALLoader(props: OSCALLoaderProps): ReactElement {
       const fragment = props.urlFragment ? `#${props.urlFragment}` : "";
       const document = props.isRestMode ? oscalObjectUuid : "";
       const path = `/${props.oscalObjectType.jsonRootName}/${document}${fragment}`;
-      // Handle uuid displaying in url depending on REST mode
-      window.history.pushState("", "", path);
+      if (!! props.ignoreRouter) {
+        // Handle uuid displaying in url depending on REST mode
+        window.history.pushState("", "", path);
+      }
     } else if (props.isRestMode) {
       setOscalUrl(null);
       setIsLoaded(true);
@@ -444,8 +455,10 @@ export function OSCALCatalogLoader(props: OSCALDocumentLoaderProps) {
   ) : (
     <OSCALLoader
       oscalObjectType={oscalObjectType}
+      oscalObjectUuid={props.oscalObjectUuid}
       renderer={renderer}
       renderForm={props.renderForm}
+      ignoreRouter={props.ignoreRouter}
       backendUrl={props.backendUrl}
       urlFragment={props.urlFragment}
       isRestMode={props.isRestMode}
@@ -496,8 +509,10 @@ export function OSCALSSPLoader(props: OSCALDocumentLoaderProps) {
   return (
     <OSCALLoader
       oscalObjectType={oscalObjectType}
+      oscalObjectUuid={props.oscalObjectUuid}
       renderer={renderer}
       renderForm={props.renderForm}
+      ignoreRouter={props.ignoreRouter}
       backendUrl={props.backendUrl}
       urlFragment={props.urlFragment}
       isRestMode={props.isRestMode}
@@ -547,8 +562,10 @@ export function OSCALComponentLoader(props: OSCALDocumentLoaderProps) {
   return (
     <OSCALLoader
       oscalObjectType={oscalObjectType}
+      oscalObjectUuid={props.oscalObjectUuid}
       renderer={renderer}
       renderForm={props.renderForm}
+      ignoreRouter={props.ignoreRouter}
       backendUrl={props.backendUrl}
       urlFragment={props.urlFragment}
       isRestMode={props.isRestMode}
@@ -598,8 +615,10 @@ export function OSCALProfileLoader(props: OSCALDocumentLoaderProps) {
   return (
     <OSCALLoader
       oscalObjectType={oscalObjectType}
+      oscalObjectUuid={props.oscalObjectUuid}
       renderer={renderer}
       renderForm={props.renderForm}
+      ignoreRouter={props.ignoreRouter}
       backendUrl={props.backendUrl}
       urlFragment={props.urlFragment}
       isRestMode={props.isRestMode}
