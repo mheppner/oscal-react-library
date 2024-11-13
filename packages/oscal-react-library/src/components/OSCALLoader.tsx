@@ -122,11 +122,7 @@ export default function OSCALLoader(props: OSCALLoaderProps): ReactElement {
   // This will force a redraw of the form on each click, allowing us to reset after
   // an error and to ensure.
   const [reloadCount, setReloadCount] = useState(0);
-  // const oscalObjectUuid = useParams()?.id ?? "";
-  const [oscalObjectUuid, setOscalObjectUuid] = useState(props.oscalObjectUuid ?? "");
-  if (!oscalObjectUuid && useParams().id) {
-    setOscalObjectUuid(useParams().id)
-  }
+  const oscalObjectUuid = props.oscalObjectUuid ?? useParams()?.id ?? "";
 
   const buildOscalUrl = (uuid: string) =>
     `${props.backendUrl}/${props.oscalObjectType.restPath}/${uuid}`;
@@ -166,7 +162,12 @@ export default function OSCALLoader(props: OSCALLoaderProps): ReactElement {
     restUrlPath,
     oscalObjectType
   ) => {
-    const requestUrl = restUtils.buildRequestUrl(partialRestData, restUrlPath, oscalObjectType);
+
+    const requestUrl = restUtils.buildRequestUrl(
+      partialRestData,
+      restUrlPath ?? props.backendUrl,
+      oscalObjectType
+    );
 
     if (newValue) {
       restUtils.populatePartialRestData(
@@ -292,7 +293,7 @@ export default function OSCALLoader(props: OSCALLoaderProps): ReactElement {
       const fragment = props.urlFragment ? `#${props.urlFragment}` : "";
       const document = props.isRestMode ? oscalObjectUuid : "";
       const path = `/${props.oscalObjectType.jsonRootName}/${document}${fragment}`;
-      if (!! props.ignoreRouter) {
+      if (! props.ignoreRouter) {
         // Handle uuid displaying in url depending on REST mode
         window.history.pushState("", "", path);
       }
