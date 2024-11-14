@@ -111,9 +111,14 @@ export function populatePartialRestData(
 export function buildRequestUrl(
   partialRestData: any,
   restUrlPath: string | undefined,
+  backendUrl: string | undefined,
   oscalObjectType: OscalObjectType | null
 ): string {
-  if (!restUrlPath && oscalObjectType) {
+  if (backendUrl && oscalObjectType) {
+    return `${backendUrl}/${oscalObjectType.restPath}/${
+      partialRestData[oscalObjectType.jsonRootName].uuid
+    }`;
+  } else if (!restUrlPath && oscalObjectType) {
     return `${process.env.REACT_APP_REST_BASE_URL}/${oscalObjectType.restPath}/${
       partialRestData[oscalObjectType.jsonRootName].uuid
     }`;
@@ -254,7 +259,7 @@ export function createOrUpdateSspControlImplementationImplementedRequirementStat
   performRequest(
     { "implemented-requirement": partialRestImplementedRequirement },
     RestMethod.PUT,
-    buildRequestUrl(null, requestUrl, null),
+    buildRequestUrl(null, requestUrl, undefined, null),
     onPreRestRequest,
     onSuccess,
     onError
@@ -285,7 +290,7 @@ export function createSspControlImplementationImplementedRequirement(
   performRequest(
     { "implemented-requirement": newImplementedRequirement },
     RestMethod.POST,
-    buildRequestUrl(null, requestUrl, null),
+    buildRequestUrl(null, requestUrl, undefined, null),
     onPreRestRequest,
     onSuccess,
     onError

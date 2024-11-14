@@ -162,10 +162,10 @@ export default function OSCALLoader(props: OSCALLoaderProps): ReactElement {
     restUrlPath,
     oscalObjectType
   ) => {
-
     const requestUrl = restUtils.buildRequestUrl(
       partialRestData,
-      restUrlPath ?? props.backendUrl,
+      restUrlPath,
+      props.backendUrl,
       oscalObjectType
     );
 
