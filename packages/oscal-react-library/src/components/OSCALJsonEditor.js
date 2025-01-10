@@ -1,7 +1,6 @@
-import React, { useRef } from "react";
+import React, { useState } from "react";
 import { styled } from "@mui/material/styles";
 import Button from "@mui/material/Button";
-import Editor from "@monaco-editor/react";
 import { Grid, Typography } from "@mui/material";
 import SaveIcon from "@mui/icons-material/Save";
 import CancelIcon from "@mui/icons-material/Cancel";
@@ -23,17 +22,8 @@ const ButtonGrid = styled(Grid)(
 );
 
 export default function OSCALJsonEditor(props) {
-  const editorRef = useRef(props.editorRef);
-
-  const editorOptions = {
-    minimap: {
-      enabled: false,
-    },
-    scrollbar: {
-      verticalHasArrows: true,
-    },
-    tabSize: 2,
-  };
+  // const editorRef = useRef(props.editorRef);
+  const [editorContent, setEditorContent] = useState(props.value);
 
   return (
     <BaseEditorGrid container direction="column" data-testid="container">
@@ -41,14 +31,10 @@ export default function OSCALJsonEditor(props) {
         <Typography variant="h6">JSON Editor</Typography>
       </Grid>
       <Grid sx={{ width: "100%" }} item>
-        <Editor
-          height="85vh"
-          options={editorOptions}
-          onMount={(editor) => {
-            editorRef.current = editor;
-          }}
-          value={props.value}
-          defaultLanguage="json"
+        <textarea
+          onChange={(e) => setEditorContent(e.target.value)}
+          value={editorContent}
+          style={{ resize: "none", height: "80vh", width: "100%" }}
         />
       </Grid>
       <Grid item>
@@ -56,7 +42,8 @@ export default function OSCALJsonEditor(props) {
           <Grid item>
             <Button
               onClick={() => {
-                editorRef.current.setValue(props.value);
+                // editorRef.current.setValue(props.value);
+                setEditorContent(props.value);
               }}
               startIcon={<CancelIcon data-testid="cancel-icon" />}
               variant="contained"
@@ -69,7 +56,8 @@ export default function OSCALJsonEditor(props) {
           <Grid item>
             <Button
               onClick={() => {
-                props.onSave(editorRef.current.getValue());
+                // props.onSave(editorRef.current.getValue());
+                props.onSave(editorContent);
               }}
               startIcon={<SaveIcon data-testid="save-icon" />}
               variant="contained"
